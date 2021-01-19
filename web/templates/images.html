@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+            <div class="row">
+                   <div id="lateral" class="col-md-2">
+                <ul class="nav nav-pills nav-stacked">
+                    <li {% if request.endpoint == "images" %}class="active"{% endif %}><a href="{{ url_for("images") }}">Images</a></li>
+                    <li {% if request.endpoint == "imagesall" %}class="active"{% endif %}><a href="{{ url_for("imagesall") }}">All</a></li>
+                <hr>
+                </ul>
+            </div>
+    {% if images %}
+            <div id="images" class="col-md-8">
+                <table class="table table-bordered table-hover">
+                    <tr>
+                        <th colspan="6">
+                            <center>Images <a href="{{ url_for("images") }}"><i class="fa fa-refresh fa-fw"></i></a></center>
+                        </th>
+                    </tr>
+                    <th><center><input type="checkbox" id="selectall" onclick="makeselect()"></center></th>
+                    <th>Id</th>
+                    <th>Tags</th>
+                    <th>Action</th>
+                    {% for image in images %}
+                        <tr>
+                            <td><center><input type="checkbox" id="select" value="{{ image.id|truncate(12, True, end="") }}"></center></td>
+                            <td><a href="{{ url_for("images") }}{{ image.Id|truncate(12, True, end="") }}">{{ image.id|truncate(12, True, end="") }}</a></td>
+                            <td>{% for name in image.tags %}{{ name }}{% if loop.last %}{% else %}, {% endif %}{% endfor %}</td>
+                            <td>
+                                <a href="{{ url_for("images") }}{{ image.id|truncate(12, True, end="") }}/run"><button class="btn btn-success btn-xs">Run</button></a>
+                                <a href="{{ url_for("images") }}{{ image.id|truncate(12, True, end="") }}/delete"><button class="btn btn-danger btn-xs">Delete</button></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            <a href="{{ url_for("images") }}all/delete"><button class="btn btn-danger">Delete all images</button></a> <button class="btn btn-danger" onclick="deleteimages()">Delete selected images</button>
+            </div>
+    {% endif %}
+    {% if inspect %}
+            <div id="image" class="col-md-8">
+                <p>{{ inspect.author }}</p>
+                <p>{{ inspect.container_config.PortSpecs }}</p>
+                <p>{{ inspect.container_config.Entrypoint }}</p>
+                <p>{{ inspect.container_config.Cmd }}</p>
+            </div>
+    {% endif %}
+    </div>
+{% endblock %}
+{% block end %}
+    <script>
+
+        function deleteimages() {
+        $("input[id=select]").each(function() {
+            if ($(this).is(":checked")) {
+                $.ajax( {
+                    type: "GET",
+                    url: "{{ url_for("images") }}" + $(this).val() + "/delete"
+                })
+            }
+        });
+        setTimeout(function() {location.reload()}, 5000)
+        }
+        function makeselect() {
+        if ($("input[id=selectall]").is(":checked")) {
+            $('input[id=select]').each(function () {
+                this.checked = true;
+            })
+        }
+        else {
+                $("input[id=select]").each(function() {
+                    this.checked = false;
+                })
+            }
+        }
+    </script>
+{% endblock %}

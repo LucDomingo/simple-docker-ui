@@ -1,0 +1,22 @@
+FROM ubuntu
+
+# Update the repositories
+RUN apt-get update -y && \
+    apt-get install -y software-properties-common && \
+    apt-add-repository -y universe && \
+    apt-get update -y
+
+# Install git and pip
+RUN apt-get install -y git-core python-pip
+
+# Clone the repository
+RUN git clone https://github.com/Itxaka/Gobolino.git /var/www/
+
+# Install the requirements
+RUN pip install -r /var/www/web/requirements.txt
+
+# Open port 5000
+EXPOSE 5000
+
+# Run the server on container launch
+CMD python /var/www/web/runserver.py

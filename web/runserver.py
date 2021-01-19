@@ -55,7 +55,7 @@ def runimage(imagen_id=None):
         return redirect(url_for("containers"))
     except docker.APIError as error:
         if error.explanation == "No command specified":
-            flash("The image has no default command to run, so I can't launch it.", "error")
+            flash("Pas de commande", "error")
             return redirect(url_for("images"))
 
 
@@ -71,30 +71,30 @@ def deleteimage(imagen_id=None):
 
 @app.route('/containers/')
 def containers():
-    containers = c.containers()
+    containers = c.containers.list()
     return render_template("containers.html", containers=containers)
 
 
 @app.route('/containers/all/')
 def containersall():
-    containers = c.containers(all=True)
+    containers = c.containers.list()
     return render_template("containers.html", containers=containers)
 
 
 @app.route('/containers/all/stop')
 def containersallstop():
-    containers = c.containers(all=True)
+    containers = c.containers.list()
     for container in containers:
-        c.stop(container['Id'])
+        container.stop()
     flash("All containers stopped.", "success")
     return redirect(url_for("containers"))
 
 
 @app.route('/containers/all/delete')
 def containersalldelete():
-    containers = c.containers(all=True)
+    containers = c.containers.list()
     for container in containers:
-        c.remove_container(container['Id'])
+        container.remove()
     flash("All containers deleted.", "success")
     return redirect(url_for("containers"))
 

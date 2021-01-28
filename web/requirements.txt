@@ -1,5 +1,0 @@
-Flask
-Flask-peewee
-Flask-WTF
-Flask-Oauthlib
-docker
